@@ -100,10 +100,12 @@ def get_args():
                         help="Set very verbose to print more checkpoints.")
     
     args = parser.parse_args()
-    print(args)
     
     if args.very_verbose:
         args.verbose = True
+        
+    if args.verbose:
+        print(args)
     
     return args
 
