@@ -38,7 +38,7 @@ def load_sheet(path, args):
     
     return df
 
-def replace_text_in_string(line, repl_dict):
+def replace_emoji_in_string(line, repl_dict):
     '''
     replaces occurances of repl_dict.keys() with values in string and returns it.
     '''
@@ -48,7 +48,7 @@ def replace_text_in_string(line, repl_dict):
     
     return line
 
-def replace_text_in_file(source_file, target_file, repl_dict, args):
+def replace_emoji_in_file(source_file, target_file, repl_dict, args):
     '''
     Performs replacements in source_file, and writes into target_file.
     Source and target are the same by default, but can be specified to be different.
@@ -63,7 +63,7 @@ def replace_text_in_file(source_file, target_file, repl_dict, args):
     new_lines = []
     
     for line in lines:
-        new_line = replace_text_in_string(line, repl_dict)
+        new_line = replace_emoji_in_string(line, repl_dict)
         new_lines.append(new_line)
     
     if args.very_verbose:
@@ -72,10 +72,10 @@ def replace_text_in_file(source_file, target_file, repl_dict, args):
     with open(target_file, 'w') as f:
         f.writelines(new_lines)
 
-def replace_text_all(files, repl_dict, args):
+def replace_emoji_all(files, repl_dict, args):
     
     for file_path in files:
-        replace_text_in_file(file_path, file_path, repl_dict, args)
+        replace_emoji_in_file(file_path, file_path, repl_dict, args)
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -115,4 +115,4 @@ if __name__ == "__main__":
     df = load_sheet(args.repl_file)
     repl_dict = build_repl_dict(df, args)
     files = list(Path(args.dir).rglob("*.ts[x]"))
-    replace_text_all(files, repl_dict, args)
+    replace_emoji_all(files, repl_dict, args)

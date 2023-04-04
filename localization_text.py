@@ -43,17 +43,20 @@ def replace_text_in_string(line, repl_dict):
     replaces occurances of repl_dict.keys() with values in string and returns it.
     '''
     
-    for key, value in repl_dict.items():
+    # for key, value in repl_dict.items():
         
-        occurances = [(m.start(), m.end()) for m in re.finditer(key, line)]
+    #     occurances = [(m.start(), m.end()) for m in re.finditer(key, line)]
         
-        # STEP 2: Split at positions, and inset value
-        for start,end in occurances:
-            left = line[:start]
-            right = line[end:]
-            assert type(left) == str and type(right) == str and type(value) == str, \
-                f"types are weird. Left - {type(left)} {left};  Right - {type(right)} {right};  value - {type(value)} {value}"
-            line = left + value + right
+    #     for start,end in occurances:
+    #         left = line[:start]
+    #         right = line[end:]
+    #         assert type(left) == str and type(right) == str and type(value) == str, \
+    #             f"types are weird. Left - {type(left)} {left};  Right - {type(right)} {right};  value - {type(value)} {value}"
+    #         line = left + value + right
+    #TODO: Test new version before finalizing. If it doenst work, use above code.
+    
+    for emoji, replacement in repl_dict.items():
+        line = line.replace(emoji, replacement)
     
     return line
     # raise NotImplementedError
