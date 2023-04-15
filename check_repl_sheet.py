@@ -63,7 +63,6 @@ class ReplChecker:
             translation_formats = re.search(regex_pattern, translation)
             
             english_format_counts = defaultdict(lambda: 0)
-            translation_format_counts = defaultdict(lambda: 0)
             
             if len(english_formats.groups()) > 0:
                 for j in range(len(english_formats.groups())):
