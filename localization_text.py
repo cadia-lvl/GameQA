@@ -16,6 +16,7 @@ def build_repl_dict(df: pd.DataFrame, args):
     '''
     src = df[args.key]
     repls = df[args.repl]
+    english = df["english"]
     
     if args.verbose:
         print("building repl dictionary...")
@@ -169,5 +170,4 @@ if __name__ == "__main__":
     how many translation keys were found, and how many are left.
     
     AND in what files they are present.
-    
     '''
