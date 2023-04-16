@@ -141,6 +141,13 @@ def get_args():
     
     return args
 
+def check_repl():
+    df = pd.read_csv("text_scorecard.csv")
+    results = df["Results"]
+    if "FAIL" in results:
+        print(f"Exiting localization_text without localization.")
+        exit(1)
+    
 if __name__ == "__main__":
     
     args = get_args()

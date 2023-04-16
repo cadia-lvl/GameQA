@@ -1,3 +1,4 @@
+import re
 from tabulate import tabulate
 from collections import defaultdict
 
@@ -102,6 +103,10 @@ class ReplChecker:
         '''
         save_df = pd.DataFrame(data = self.scorecard, columns=["Test", "Result", "Notes"])
         save_df.to_csv(f"{self.type}_scorecard.csv", index=False)
+        
+        result = save_df["Result"]
+        if "FAIL" in result:
+            print(f"{self.file_name} failed one more more of the above tests. The localization script will not be run for {self.type}. \nPlease fix the repl sheet and try again.")
 
 if __name__ == "__main__":
     
