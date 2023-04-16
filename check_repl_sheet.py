@@ -1,20 +1,24 @@
-import argparse
-import re #TODO: Might need to remove this if not needed.
-from pathlib import Path
 from tabulate import tabulate
 from collections import defaultdict
 
 import pandas as pd
 
+REPL_TEXT_FILE = "repl_text.csv"
+REPL_EMOJI_FILE = "repl_emoji.csv"
+
 class ReplChecker:
     
-    def __init__(self, args):
+    def __init__(self, file_name):
         '''
         
         '''
         self.scorecard = []
-        self.df = pd.read_csv(args.repl_file)
-        self.args = args
+        self.file_name = file_name
+        if "text" in file_name:
+            self.type = "text"
+        elif "emoji" in file_name:
+            self.type = "emoji"
+        self.df = pd.read_csv(self.file_name)
         
     def populate(self, test_name, test_result, test_note):
         '''
@@ -26,16 +30,20 @@ class ReplChecker:
         '''
         
         '''
+        print(f"############### {self.type} ###############")
         print(tabulate(self.scorecard, headers=["Test", "Result", "Notes"]))
+    
+    def check_all(self):
+        self.check_translation_completion()
+        self.check_formatted_strings()
     
     def check_translation_completion(self):
         '''
         
         '''
         test_name = "Translation Completion"
-        nan_count = self.df[self.args.repl].isnull().sum()
+        nan_count = self.df["translation"].isnull().sum()
         test_note = f"{nan_count} incomplete translations"
-        
         if nan_count > 0:
             test_result = "FAIL"
         
@@ -87,4 +95,28 @@ class ReplChecker:
             test_result = "FAIL"
         
         self.populate_checks(test_name=test_name, test_result=test_result, test_note=test_note)
+    
+    def save_check_results(self):
+        '''
         
+        '''
+        save_df = pd.DataFrame(data = self.scorecard, columns=["Test", "Result", "Notes"])
+        save_df.to_csv(f"{self.type}_scorecard.csv", index=False)
+
+if __name__ == "__main__":
+    
+    text_checker = ReplChecker(REPL_TEXT_FILE)
+    emoji_checker = ReplChecker(REPL_EMOJI_FILE)
+    
+    text_checker.check_all()
+    text_checker.show()
+    text_checker.save_check_results()
+    
+    emoji_checker.check_all()
+    emoji_checker.show()
+    emoji_checker.save_check_results()
+    
+    
+    
+    
+            
