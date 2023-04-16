@@ -1,11 +1,4 @@
 import argparse
-import re
-from pathlib import Path
-
-import pandas as pd
-
-import argparse
-import re #TODO: Might need to remove this if not needed.
 from pathlib import Path
 from tabulate import tabulate
 
@@ -155,6 +148,8 @@ def check_repl():
         exit(1)
     
 if __name__ == "__main__":
+    
+    check_repl()
     
     args = get_args()
     print(f"Replacing Text from all *.ts[x] files in the directory {args.dir} using {args.repl_file}.")
