@@ -3,6 +3,7 @@ from tabulate import tabulate
 from collections import defaultdict
 
 import pandas as pd
+import numpy as np
 
 REPL_TEXT_FILE = "repl_text.csv"
 REPL_EMOJI_FILE = "repl_emoji.csv"
@@ -21,7 +22,7 @@ class ReplChecker:
             self.type = "emoji"
         self.df = pd.read_csv(self.file_name)
         
-    def populate(self, test_name, test_result, test_note):
+    def populate_checks(self, test_name, test_result, test_note):
         '''
         
         '''
@@ -31,7 +32,7 @@ class ReplChecker:
         '''
         
         '''
-        print(f"############### {self.type} ###############")
+        print(f"\n{self.type.upper()} RESULTS:\n")
         print(tabulate(self.scorecard, headers=["Test", "Result", "Notes"]))
     
     def check_all(self):
@@ -68,24 +69,32 @@ class ReplChecker:
                 
             english = self.df["english"][i]
             translation = self.df["translation"][i]
-            english_formats = re.search(regex_pattern, english)
-            translation_formats = re.search(regex_pattern, translation)
             
+            english_formats = re.search(regex_pattern, english)
             english_format_counts = defaultdict(lambda: 0)
             
-            if len(english_formats.groups()) > 0:
+            if english_formats is not None:
                 for j in range(len(english_formats.groups())):
                     match = english_formats.group(j)
                     english_format_counts[match] += 1
                 
-                for j in range(len(translation_formats.groups())):
-                    match = translation_formats.group(j)
-                    if english_format_counts[match] > 0:
-                        matched_formats += 1
-                        english_format_counts[match] -= 1
+                if type(translation) != str and np.isnan(translation):
+                    unmatched_formats += len(english_formats.groups())
+                
+                else:    
+                    translation_formats = re.search(regex_pattern, translation)
+                    if translation_formats is None:
+                        unmatched_formats += len(english_formats.groups())
                     
                     else:
-                        unmatched_formats += 1
+                        for j in range(len(translation_formats.groups())):
+                            match = translation_formats.group(j)
+                            if english_format_counts[match] > 0:
+                                matched_formats += 1
+                                english_format_counts[match] -= 1
+                            
+                            else:
+                                unmatched_formats += 1
         
         test_note = f"{matched_formats} MATCHED string formats and {unmatched_formats} UNMATHCED string formats"
         

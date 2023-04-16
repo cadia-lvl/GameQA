@@ -12,8 +12,8 @@ class Localizer:
         self.repl = args.repl
         self.args = args
         self.files = list(Path(args.dir).rglob("*.ts")) + list(Path(args.dir).rglob("*.tsx"))
-        self.build_repl_dict()
-        self.load_sheet()
+        self.df = self.load_sheet()
+        self.repl_dict = self.build_repl_dict()
 
     def build_repl_dict(self):
         '''
@@ -29,10 +29,12 @@ class Localizer:
         if self.args.verbose:
             print("building repl dictionary...")
         
-        self.repl_dict = {key: val for key, val in zip(src, repls)}
+        repl_dict = {key: val for key, val in zip(src, repls)}
         
         if self.args.verbose:
             print("Built repl dictionary.")
+        
+        return repl_dict
 
     def load_sheet(self):
         '''
@@ -42,10 +44,12 @@ class Localizer:
         if self.args.verbose:
             print('loading repl sheet...')
             
-        self.df = pd.read_csv(self.args.repl_file)
+        df = pd.read_csv(self.args.repl_file)
         
         if self.args.verbose:
             print('loaded repl sheet')
+        
+        return df
 
     def replace_emoji_in_string(self, line):
         '''
@@ -75,7 +79,7 @@ class Localizer:
             
             new_lines = []
             for line in lines:
-                new_line, keycount = self.replace_text_in_string(line, self.repl_dict)
+                new_line, keycount = self.replace_emoji_in_string(line)
                 new_lines.append(new_line)
                 file_repl_count += keycount
             
@@ -86,7 +90,8 @@ class Localizer:
                 f.writelines(new_lines)
             
             log_row = [source_file, file_repl_count]
-            self.repl_log.append(log_row)
+            if file_repl_count > 0:
+                self.repl_log.append(log_row)
         
         # TODO: How do you want to handle this?
         except Exception as e:
@@ -102,10 +107,10 @@ class Localizer:
     def replace_emoji_all(self):
         
         for file_path in self.files:
-            self.replace_text_in_file(file_path)
+            self.replace_emoji_in_file(file_path)
     
     def show_report(self):
-        print(f"############### EMOJI LOCALIZATION RESULT ###############")
+        print(f"\nEMOJI LOCALIZATION RESULT:\n")
         print(tabulate(self.repl_log, headers=["FILE NAME", "Replacement Count"]))
 
 def get_args():
@@ -142,7 +147,7 @@ def get_args():
 
 def check_repl():
     df = pd.read_csv("emoji_scorecard.csv")
-    results = df["Results"]
+    results = df["Result"]
     if "FAIL" in results:
         print(f"Exiting localization_emoji without localization.")
         exit(1)
@@ -155,5 +160,5 @@ if __name__ == "__main__":
     print(f"Replacing Text from all *.ts[x] files in the directory {args.dir} using {args.repl_file}.")
     
     localizer = Localizer(args)
-    localizer.replace_text_all()
+    localizer.replace_emoji_all()
     localizer.show_report()

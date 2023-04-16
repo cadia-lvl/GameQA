@@ -1,0 +1,3 @@
+Test,Result,Notes
+Translation Completion,PASS,0 incomplete translations
+Formatted Strings like ${.*},PASS,0 MATCHED string formats and 0 UNMATHCED string formats

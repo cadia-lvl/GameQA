@@ -12,8 +12,8 @@ class Localizer:
         self.repl = args.repl
         self.args = args
         self.files = list(Path(args.dir).rglob("*.ts")) + list(Path(args.dir).rglob("*.tsx"))
-        self.build_repl_dict()
-        self.load_sheet()
+        self.df = self.load_sheet()
+        self.repl_dict = self.build_repl_dict()
 
     def build_repl_dict(self):
         '''
@@ -29,10 +29,12 @@ class Localizer:
         if self.args.verbose:
             print("building repl dictionary...")
         
-        self.repl_dict = {key: val for key, val in zip(src, repls)}
+        repl_dict = {key: val for key, val in zip(src, repls)}
         
         if self.args.verbose:
             print("Built repl dictionary.")
+        
+        return repl_dict
 
     def load_sheet(self):
         '''
@@ -42,10 +44,12 @@ class Localizer:
         if self.args.verbose:
             print('loading repl sheet...')
             
-        self.df = pd.read_csv(self.args.repl_file)
+        df = pd.read_csv(self.args.repl_file)
         
         if self.args.verbose:
             print('loaded repl sheet')
+        
+        return df
 
     def replace_text_in_string(self, line):
         '''
@@ -75,7 +79,7 @@ class Localizer:
             
             new_lines = []
             for line in lines:
-                new_line, keycount = self.replace_text_in_string(line, self.repl_dict)
+                new_line, keycount = self.replace_text_in_string(line)
                 new_lines.append(new_line)
                 file_repl_count += keycount
             
@@ -86,7 +90,8 @@ class Localizer:
                 f.writelines(new_lines)
             
             log_row = [source_file, file_repl_count]
-            self.repl_log.append(log_row)
+            if file_repl_count > 0:
+                self.repl_log.append(log_row)
         
         # TODO: How do you want to handle this?
         except Exception as e:
@@ -105,7 +110,7 @@ class Localizer:
             self.replace_text_in_file(file_path)
     
     def show_report(self):
-        print(f"############### TEXT LOCALIZATION RESULT ###############")
+        print(f"\nTEXT LOCALIZATION RESULT:\n")
         print(tabulate(self.repl_log, headers=["FILE NAME", "Replacement Count"]))
 
 def get_args():
@@ -114,7 +119,7 @@ def get_args():
     parser.add_argument('--key', type=str, required=True, 
                         help="columns to build keys to replace from")
     
-    parser.add_argument('--repl', type=str, required=False, default=None, 
+    parser.add_argument('--repl', type=str, required=True,
                         help="columns to build values to replace to")
     
     parser.add_argument('--repl_file', type=str, required=True, 
@@ -142,7 +147,7 @@ def get_args():
 
 def check_repl():
     df = pd.read_csv("text_scorecard.csv")
-    results = df["Results"]
+    results = df["Result"]
     if "FAIL" in results:
         print(f"Exiting localization_text without localization.")
         exit(1)
