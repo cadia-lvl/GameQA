@@ -8,6 +8,8 @@ class Localizer:
     
     def __init__(self, args):
         self.repl_log = []
+        self.total_succeeds = 0 
+        self.total_failures = 0
         self.key = args.key
         self.repl = args.repl
         self.args = args
@@ -91,6 +93,7 @@ class Localizer:
             
             log_row = [source_file, file_repl_count]
             if file_repl_count > 0:
+                self.total_succeeds += file_repl_count
                 self.repl_log.append(log_row)
         
         # TODO: How do you want to handle this?
@@ -102,6 +105,7 @@ class Localizer:
             print("========================")
             
             log_row = [source_file, "ERROR"]
+            self.total_failures += 1
             self.repl_log.append(log_row)
 
     def replace_text_all(self):
@@ -110,8 +114,16 @@ class Localizer:
             self.replace_text_in_file(file_path)
     
     def show_report(self):
-        print(f"\nTEXT LOCALIZATION RESULT:\n")
+        print(f"\nEMOJI LOCALIZATION RESULT:\n")
         print(tabulate(self.repl_log, headers=["FILE NAME", "Replacement Count"]))
+        
+        collective_data = []
+        collective_data.append(["TOTAL SUCCESSFUL REPLACEMENTS", self.total_succeeds])
+        collective_data.append(["TOTAL FAILED FILES", self.total_failures])
+        # print("\nAGGREGATION:")
+        print()
+        print(tabulate(collective_data, headers=["Aggregation", "Count"]))
+        print()
 
 def get_args():
     parser = argparse.ArgumentParser()
