@@ -1,6 +1,8 @@
 rm -rf Localized_App
 mkdir -p Localized_App
 
+pip3 install -r requirements.txt
+
 cd Localized_App
 
 git clone https://github.com/cadia-lvl/qa-crowdsourcing-app.git
