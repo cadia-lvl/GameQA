@@ -18,9 +18,9 @@ cd ..
 
 # TODO:
 # pre-localization check.
-python check_repl_sheet.py
-python localization_text.py --key key --repl translation --repl_file repl_text.csv --dir Localized_App -v
-python localization_emoji.py --key key --repl translation --repl_file repl_emoji.csv --dir Localized_App -v
+python3 check_repl_sheet.py
+python3 localization_text.py --key key --repl translation --repl_file repl_text.csv --dir Localized_App -v
+python3 localization_emoji.py --key key --repl translation --repl_file repl_emoji.csv --dir Localized_App -v
 
 rm text_scorecard.csv
 rm emoji_scorecard.csv
