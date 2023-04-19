@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 from tabulate import tabulate
+from termcolor import colored
 
 import pandas as pd
 
@@ -159,10 +160,14 @@ def get_args():
 
 def check_repl():
     df = pd.read_csv("emoji_scorecard.csv")
-    results = df["Result"]
+    results = list(df["Result"])
     if "FAIL" in results:
-        print(f"Exiting localization_emoji without localization.")
+        text = colored(f"\n[FAIL] Exiting localization_emoji without localization.\n".upper(), 'red') 
+        print(text)
         exit(1)
+    else:
+        text = colored(f"\n[PASS] Running localization_emoji\n".upper(), 'green')
+        print(text) 
     
 if __name__ == "__main__":
     

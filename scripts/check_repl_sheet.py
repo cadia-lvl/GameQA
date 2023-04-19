@@ -1,6 +1,7 @@
 import re
 from tabulate import tabulate
 from collections import defaultdict
+from termcolor import colored
 
 import pandas as pd
 import numpy as np
@@ -34,10 +35,33 @@ class ReplChecker:
         '''
         print(f"\n{self.type.upper()} RESULTS:\n")
         print(tabulate(self.scorecard, headers=["Test", "Result", "Notes"]))
+        print()
     
     def check_all(self):
         self.check_translation_completion()
         self.check_formatted_strings()
+        self.check_double_quotes()
+    
+    def check_double_quotes(self):
+        test_name = "Double Quotes"
+        double_quotes_count = 0
+        
+        for i in range(self.df.index.size):
+            translation = self.df["translation"][i]
+            if type(translation) != str and np.isnan(translation):
+                continue
+            if '"' in translation:
+                double_quotes_count += translation.count('"')
+        
+        test_note = f"{double_quotes_count} Double Quotes Found."
+        
+        if double_quotes_count == 0:
+            test_result = "PASS"
+        
+        else:
+            test_result = "FAIL"
+        
+        self.populate_checks(test_name=test_name, test_result=test_result, test_note=test_note)
     
     def check_translation_completion(self):
         '''
@@ -113,9 +137,11 @@ class ReplChecker:
         save_df = pd.DataFrame(data = self.scorecard, columns=["Test", "Result", "Notes"])
         save_df.to_csv(f"{self.type}_scorecard.csv", index=False)
         
-        result = save_df["Result"]
+        result = list(save_df["Result"])
+        
         if "FAIL" in result:
-            print(f"{self.file_name} failed one more more of the above tests. The localization script will not be run for {self.type}. \nPlease fix the repl sheet and try again.")
+            text = colored(f"[FAIL] {self.file_name} failed one more more of the above tests. The localization script will not be run for {self.type}. \nPlease fix the repl sheet and try again.", 'red', attrs=['reverse'])
+            print(text)
 
 if __name__ == "__main__":
     
