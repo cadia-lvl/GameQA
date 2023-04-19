@@ -16,6 +16,9 @@ cd qa-crowdsourcing-api
 git checkout localization
 rm -r -f .git && cd ..
 
+mv qa-crowdsourcing-app app
+mv qa-crowdsourcing-api api
+
 cd ..
 
 # TODO:
