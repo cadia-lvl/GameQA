@@ -6,8 +6,9 @@ from termcolor import colored
 import pandas as pd
 import numpy as np
 
-REPL_TEXT_FILE = "repl_text.csv"
-REPL_EMOJI_FILE = "repl_emoji.csv"
+REPL_TEXT_FILE = "repl/repl_text.csv"
+REPL_EMOJI_FILE = "repl/repl_emoji.csv"
+REPL_VALUES_FILE = "repl/repl_values.csv"
 
 class ReplChecker:
     
@@ -21,6 +22,9 @@ class ReplChecker:
             self.type = "text"
         elif "emoji" in file_name:
             self.type = "emoji"
+        elif "values" in file_name:
+            self.type = "values"
+            
         self.df = pd.read_csv(self.file_name)
         
     def populate_checks(self, test_name, test_result, test_note):
@@ -147,6 +151,7 @@ if __name__ == "__main__":
     
     text_checker = ReplChecker(REPL_TEXT_FILE)
     emoji_checker = ReplChecker(REPL_EMOJI_FILE)
+    values_checker = ReplChecker(REPL_VALUES_FILE)
     
     text_checker.check_all()
     text_checker.show()
@@ -155,6 +160,10 @@ if __name__ == "__main__":
     emoji_checker.check_all()
     emoji_checker.show()
     emoji_checker.save_check_results()
+    
+    values_checker.check_all()
+    values_checker.show()
+    values_checker.save_check_results()
     
     
     

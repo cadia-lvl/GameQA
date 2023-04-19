@@ -57,25 +57,25 @@ class Localizer:
         
         return df
 
-    def replace_emoji_in_string(self, line):
+    def replace_values_in_string(self, line):
         '''
         replaces occurances of repl_dict.keys() with values in string and returns it.
         '''
-        emoji_count = 0
-        for key_emoji, replacement in self.repl_dict.items():
-            emoji_count += line.count(key_emoji)
-            line = line.replace(key_emoji, replacement)
+        key_count = 0
+        for key, replacement in self.repl_dict.items():
+            key_count += line.count(key)
+            line = line.replace(key, replacement)
             
-        return line, emoji_count
+        return line, key_count
 
-    def replace_emoji_in_file(self, source_file):
+    def replace_values_in_file(self, source_file):
         '''
         Performs replacements in source_file, and writes into target_file.
         Source and target are the same by default, but can be specified to be different.
         '''
         
         if self.args.very_verbose:
-            print(f"Replacing text in file: {source_file}...")
+            print(f"Replacing values in file: {source_file}...")
         
         file_repl_count = 0
         
@@ -85,12 +85,12 @@ class Localizer:
             
             new_lines = []
             for line in lines:
-                new_line, keycount = self.replace_emoji_in_string(line)
+                new_line, keycount = self.replace_values_in_string(line)
                 new_lines.append(new_line)
                 file_repl_count += keycount
             
             if self.args.very_verbose:
-                print(f"  Replaced. Writing new text in file: {source_file}")
+                print(f"  Replaced. Writing new values in file: {source_file}")
             
             with open(source_file, 'w') as f:
                 f.writelines(new_lines)
@@ -112,10 +112,10 @@ class Localizer:
             self.total_failures += 1
             self.repl_log.append(log_row)
 
-    def replace_emoji_all(self):
+    def replace_values_all(self):
         
         for file_path in self.files:
-            self.replace_emoji_in_file(file_path)
+            self.replace_values_in_file(file_path)
     
     def show_report(self):
         print(f"\nEMOJI LOCALIZATION RESULT:\n")
@@ -135,7 +135,7 @@ def get_args():
     parser.add_argument('--key', type=str, required=True, 
                         help="columns to build keys to replace from")
     
-    parser.add_argument('--repl', type=str, required=False, default=None, 
+    parser.add_argument('--repl', type=str, required=True,
                         help="columns to build values to replace to")
     
     parser.add_argument('--repl_file', type=str, required=True, 
@@ -165,14 +165,15 @@ def get_args():
     return args
 
 def check_repl():
-    df = pd.read_csv("emoji_scorecard.csv")
+    df = pd.read_csv("values_scorecard.csv")
     results = list(df["Result"])
     if "FAIL" in results:
-        message_log = colored(f"\n[FAIL] Exiting localization_emoji without localization.\n".upper(), 'red') 
+        message_log = colored(f"\n[FAIL] Exiting localization_values without localization.\n".upper(), 'red') 
         print(message_log)
         exit(1)
+    
     else:
-        message_log = colored(f"\n[PASS] Running localization_emoji\n".upper(), 'green')
+        message_log = colored(f"\n[PASS] Running localization_values\n".upper(), 'green')
         print(message_log) 
     
 if __name__ == "__main__":
@@ -181,11 +182,10 @@ if __name__ == "__main__":
     
     args = get_args()
     if args.file is None:
-        print(f"Replacing Emojis from all *.ts[x] files in the directory {args.dir} using {args.repl_file}.")
-    
+        print(f"Replacing Values from all *.ts[x] files in the directory {args.dir} using {args.repl_file}.")
     else:
-        print(f"Replacing Emojis from {args.file} using {args.repl_file}.")
+        print(f"Replacing Values from {args.file} using {args.repl_file}.")
     
     localizer = Localizer(args)
-    localizer.replace_emoji_all()
+    localizer.replace_values_all()
     localizer.show_report()

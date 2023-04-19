@@ -14,7 +14,10 @@ class Localizer:
         self.key = args.key
         self.repl = args.repl
         self.args = args
-        self.files = list(Path(args.dir).rglob("*.ts")) + list(Path(args.dir).rglob("*.tsx"))
+        if args.file is None:
+            self.files = list(Path(args.dir).rglob("*.ts")) + list(Path(args.dir).rglob("*.tsx"))
+        else:
+            self.files = [args.file]
         self.df = self.load_sheet()
         self.repl_dict = self.build_repl_dict()
 
@@ -142,6 +145,9 @@ def get_args():
                         help='''This is the directory that the localizer with walk through to make
                         The translations.''')
     
+    parser.add_argument('--file', type=str, required=False, default=None,
+                        help='''This is the file that the localizer will work with. This overrides --dir.''')
+    
     parser.add_argument('--verbose', '-v', default=False, action='store_true',
                         help="Set verbose to print checkopints.")
     
@@ -162,20 +168,25 @@ def check_repl():
     df = pd.read_csv("text_scorecard.csv")
     results = list(df["Result"])
     if "FAIL" in results:
-        text = colored(f"\n[FAIL] Exiting localization_text without localization.\n".upper(), 'red') 
-        print(text)
+        message_log = colored(f"\n[FAIL] Exiting localization_text without localization.\n".upper(), 'red') 
+        print(message_log)
         exit(1)
     
     else:
-        text = colored(f"\n[PASS] Running localization_text\n".upper(), 'green')
-        print(text) 
+        message_log = colored(f"\n[PASS] Running localization_text\n".upper(), 'green')
+        print(message_log) 
     
 if __name__ == "__main__":
     
     check_repl()
     
     args = get_args()
-    print(f"Replacing Text from all *.ts[x] files in the directory {args.dir} using {args.repl_file}.")
+    
+    if args.file is None:
+        print(f"Replacing Text from all *.ts[x] files in the directory {args.dir} using {args.repl_file}.")
+    
+    else:
+        print(f"Replacing Text from {args.file} using {args.repl_file}.")
     
     localizer = Localizer(args)
     localizer.replace_text_all()

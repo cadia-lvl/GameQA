@@ -21,11 +21,13 @@ cd ..
 # TODO:
 # pre-localization check.
 python3 scripts/check_repl_sheet.py
-python3 scripts/localization_text.py --key key --repl translation --repl_file repl_text.csv --dir Localized_App -v
-python3 scripts/localization_emoji.py --key key --repl translation --repl_file repl_emoji.csv --dir Localized_App -v
+python3 scripts/localization_text.py --key key --repl translation --repl_file repl/repl_text.csv --dir Localized_App -v
+python3 scripts/localization_emoji.py --key key --repl translation --repl_file repl/repl_emoji.csv --dir Localized_App -v
+python3 scripts/localization_values.py --key english --repl translation --repl_file repl/repl_values.csv --dir Localized_App -v
 
 rm text_scorecard.csv
 rm emoji_scorecard.csv
+rm values_scorecard.csv
 
 # python3 localization_text.py --key key --repl translation --repl_file repl_text.csv --dir . -v # TODO: Modify to take jsut one fine as well
 
